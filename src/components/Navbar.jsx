@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, Bot } from 'lucide-react';
+import { Link } from "react-router-dom";
 
 const Navbar = ({ onOpenAiBot }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,15 +16,18 @@ const Navbar = ({ onOpenAiBot }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            <Link to="/" className="text-gray-700 hover:text-blue-600 font-medium">
               Home
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            </Link>
+            <Link to="/about" className="text-gray-700 hover:text-blue-600 font-medium">
               About
-            </a>
-            <a href="#" className="text-gray-700 hover:text-blue-600 font-medium">
+            </Link>
+            <Link to="/login" className="text-gray-700 hover:text-blue-600 font-medium">
               Login
-            </a>
+            </Link>
+            <Link to="/register" className="text-gray-700 hover:text-blue-600 font-medium">
+              Register
+            </Link>
 
             {/* AI Bot Appended at the End */}
             <button
