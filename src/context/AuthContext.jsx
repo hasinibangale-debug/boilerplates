@@ -1,6 +1,24 @@
 import { createContext, useState, useEffect } from "react";
 import api from "../services/api";
 
+/**
+ * AuthContext - Manages authentication state and operations
+ * 
+ * Available in context:
+ * - user: Current authenticated user object (or null)
+ * - token: JWT token for API requests
+ * - isAuthenticated: Boolean flag indicating if user is logged in
+ * - loading: Boolean flag for loading state
+ * - login(credentials): Function to authenticate user
+ * - logout(): Function to clear authentication
+ * 
+ * Usage Example:
+ * const { user, login, logout, isAuthenticated } = useContext(AuthContext);
+ * 
+ * Update the API endpoints below to match your backend:
+ * - POST /auth/login - Should return { token, user }
+ * - GET /auth/me - Should return current user object
+ */
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -14,6 +32,7 @@ export function AuthProvider({ children }) {
       if (token) {
         try {
           // Fetch current user details from backend using token
+          // Update this endpoint to match your backend
           const response = await api.get("/auth/me");
           setUser(response.data);
         } catch (error) {
@@ -29,7 +48,8 @@ export function AuthProvider({ children }) {
 
   // Login handler
   const login = async (credentials) => {
-    // Replace with your actual backend endpoint (e.g., /auth/login)
+    // Update this endpoint to match your backend
+    // Expected response: { token: "jwt_token", user: { id, email, name, ... } }
     const response = await api.post("/auth/login", credentials);
     const { token: authToken, user: userData } = response.data;
 

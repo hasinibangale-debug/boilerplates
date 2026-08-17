@@ -2,25 +2,36 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  FileText, 
-  Users, 
-  BarChart2, 
   Settings, 
   ChevronLeft, 
   ChevronRight 
 } from 'lucide-react';
 import Navbar from '../components/Navbar';
 
+/**
+ * DashboardLayout Component
+ * 
+ * A responsive dashboard layout with a collapsible sidebar.
+ * 
+ * Customize the navigation items by modifying the navItems array below.
+ * Each item should have:
+ * - label: Display name (string)
+ * - path: Route path (string)
+ * - icon: Lucide React icon component
+ * 
+ * Add your dashboard pages as nested routes under /dashboard in App.jsx
+ */
 const DashboardLayout = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
 
+  // Customize your dashboard navigation items here
   const navItems = [
     { label: 'Home', path: '/dashboard', icon: Home },
-    { label: 'Requests', path: '/dashboard/requests', icon: FileText },
-    { label: 'Users', path: '/dashboard/users', icon: Users },
-    { label: 'Reports', path: '/dashboard/reports', icon: BarChart2 },
     { label: 'Settings', path: '/dashboard/settings', icon: Settings },
+    // Add more navigation items here
+    // { label: 'Users', path: '/dashboard/users', icon: Users },
+    // { label: 'Reports', path: '/dashboard/reports', icon: BarChart2 },
   ];
 
   return (
