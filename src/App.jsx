@@ -4,58 +4,11 @@ import Navbar from './components/Navbar';
 import DashboardLayout from './layouts/DashboardLayout';
 import ProtectedRoute from './components/ProtectedRoute';
 
-// Placeholder views for your routes
-const Home = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">Home Page</h1>
-    <p className="text-gray-600 mt-2">Welcome to your app starter!</p>
-  </div>
-);
-
-const About = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">About Page</h1>
-  </div>
-);
-
-const Login = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">Login Page</h1>
-  </div>
-);
-
-const Register = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">Register Page</h1>
-  </div>
-);
-
-const Dashboard = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">Dashboard Page</h1>
-    <p className="text-gray-600 mt-2">Welcome to your dashboard!</p>
-  </div>
-);
-const Requests = () => <div className="text-2xl font-bold text-gray-800">Requests Page</div>;
-const Users = () => <div className="text-2xl font-bold text-gray-800">Users Page</div>;
-const Reports = () => <div className="text-2xl font-bold text-gray-800">Reports Page</div>;
-const Settings = () => <div className="text-2xl font-bold text-gray-800">Settings Page</div>;
-
-const Profile = () => (
-  <div className="p-8">
-    <h1 className="text-3xl font-bold text-gray-800">Profile Page</h1>
-  </div>
-);
-
-const NotFound = () => (
-  <div className="p-8 text-center">
-    <h1 className="text-4xl font-bold text-red-500">404</h1>
-    <p className="text-gray-600 mt-2">Page Not Found</p>
-    <Link to="/" className="text-blue-600 underline mt-4 inline-block">
-      Return to Home
-    </Link>
-  </div>
-);
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/NotFound';
 
 function App() {
 
@@ -76,10 +29,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardLayout />}>
               <Route index element={<Dashboard />} />
-              <Route path="requests" element={<Requests />} />
-              <Route path="users" element={<Users />} />
-              <Route path="reports" element={<Reports />} />
-              <Route path="settings" element={<Settings />} />
+              {/* Add nested routes here */}
             </Route>
           </Route>
 
