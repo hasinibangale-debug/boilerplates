@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { 
-  Home, 
-  Settings, 
+  Home,
+  Calendar, 
+  Flame,
   ChevronLeft, 
-  ChevronRight 
+  ChevronRight, 
+  Gamepad2
 } from 'lucide-react';
-import Navbar from '../components/Navbar';
+import DashboardNavbar from '../components/DashboardNavbar';
 
 /**
  * DashboardLayout Component
@@ -27,8 +29,10 @@ const DashboardLayout = () => {
 
   // Customize your dashboard navigation items here
   const navItems = [
-    { label: 'Home', path: '/dashboard', icon: Home },
-    { label: 'Settings', path: '/dashboard/settings', icon: Settings },
+    { label: 'Dashboard', path: '/dashboard', icon: Home },
+    { label: 'Habits', path: '/dashboard/habits', icon: Flame },
+    { label: 'Calendar', path: '/dashboard/calendar', icon: Calendar },
+    { label: 'Games', path: '/dashboard/games', icon: Gamepad2 },
     // Add more navigation items here
     // { label: 'Users', path: '/dashboard/users', icon: Users },
     // { label: 'Reports', path: '/dashboard/reports', icon: BarChart2 },
@@ -36,7 +40,7 @@ const DashboardLayout = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <Navbar />
+      <DashboardNavbar />
 
       <div className="flex flex-1">
         {/* Sidebar */}

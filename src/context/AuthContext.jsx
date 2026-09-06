@@ -28,23 +28,35 @@ export function AuthProvider({ children }) {
 
   // Auto-login check on app mount if token exists
   useEffect(() => {
-    const initAuth = async () => {
-      if (token) {
-        try {
-          // Fetch current user details from backend using token
-          // Update this endpoint to match your backend
-          const response = await api.get("/auth/me");
-          setUser(response.data);
-        } catch (error) {
-          console.error("Session expired or invalid token:", error);
-          logout();
-        }
-      }
-      setLoading(false);
-    };
+     const initAuth = async () => {
+  if (import.meta.env.VITE_MOCK_AUTH === "true") {
+    setUser({
+      id: "mock-user-1",
+      name: "Hasini",
+      email: "hasini@example.com",
+    });
 
-    initAuth();
-  }, [token]);
+    setToken("mock-token");
+    setLoading(false);
+    return;
+  }
+
+  if (token) {
+    try {
+      const response = await api.get("/auth/me");
+      setUser(response.data);
+    } catch (error) {
+      console.error("Session expired or invalid token:", error);
+      logout();
+    }
+  }
+
+  setLoading(false);
+};
+
+  initAuth();
+
+  },[token]);
 
   // Login handler
   const login = async (credentials) => {
