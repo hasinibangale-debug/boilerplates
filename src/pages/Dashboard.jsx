@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import {
   Flame,
   CheckCircle2,
@@ -8,27 +7,20 @@ import {
 
 import StatCard from '../components/StatCard';
 import HabitCard from '../components/HabitCard';
-import { mockTodayHabits } from '../mock/habitData';
+import { useHabit } from '../context/HabitContext';
+
+const today = new Date().toISOString().split('T')[0];
 
 const Dashboard = () => {
-  const [habits, setHabits] = useState(mockTodayHabits);
+  const { habits, completions, toggleCompletion } = useHabit();
 
-  const handleToggle = (id) => {
-    setHabits((prevHabits) =>
-      prevHabits.map((habit) =>
-        habit.id === id
-          ? {
-              ...habit,
-              isCompleted: !habit.isCompleted,
-            }
-          : habit
-      )
-    );
-  };
-
-  const completedCount = habits.filter(
-    (habit) => habit.isCompleted
+  const completedCount = completions.filter(
+    (completion) => completion.date === today && completion.completed
   ).length;
+
+  const handleToggleComplete = (habitId) => {
+    toggleCompletion(habitId, today);
+  };
 
   return (
     <div className="space-y-8">
@@ -78,7 +70,7 @@ const Dashboard = () => {
 
         <StatCard
           title="Total Habits"
-          value="8"
+          value={habits.length}
           icon={ListTodo}
         />
 
@@ -107,13 +99,21 @@ const Dashboard = () => {
 
         <div className="space-y-3">
 
-          {habits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={habit}
-              onToggleComplete={handleToggle}
-            />
-          ))}
+          {habits.map((habit) => {
+            const todayCompletion = completions.find(
+              (completion) =>
+                completion.habitId === habit.id && completion.date === today
+            );
+
+            return (
+              <HabitCard
+                key={habit.id}
+                habit={habit}
+                isCompleted={todayCompletion ? todayCompletion.completed : false}
+                onToggleComplete={handleToggleComplete}
+              />
+            );
+          })}
 
         </div>
 

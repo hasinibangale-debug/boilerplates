@@ -1,8 +1,8 @@
 import React from 'react';
 import { Flame, Check } from 'lucide-react';
 
-const HabitCard = ({ habit, onToggleComplete }) => {
-  const { title, streak, note, color, isCompleted } = habit;
+const HabitCard = ({ habit, isCompleted, onToggleComplete }) => {
+  const { title, color } = habit;
 
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between gap-4">
@@ -19,14 +19,8 @@ const HabitCard = ({ habit, onToggleComplete }) => {
           
           <div className="flex items-center gap-1 text-amber-500 text-xs font-medium mt-1">
             <Flame className="w-3.5 h-3.5 fill-amber-500" />
-            <span>{streak} day streak</span>
+            <span>Streak calculation coming soon</span>
           </div>
-
-          {note && (
-            <p className="text-xs text-gray-500 italic mt-2">
-              "{note}"
-            </p>
-          )}
         </div>
       </div>
 
@@ -39,9 +33,13 @@ const HabitCard = ({ habit, onToggleComplete }) => {
             : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
         }`}
       >
-        <div className={`w-4 h-4 rounded border flex items-center justify-center ${
-          isCompleted ? 'bg-green-600 border-green-600 text-white' : 'border-gray-400 bg-white'
-        }`}>
+        <div
+          className={`w-4 h-4 rounded border flex items-center justify-center ${
+            isCompleted
+              ? 'bg-green-600 border-green-600 text-white'
+              : 'border-gray-400 bg-white'
+          }`}
+        >
           {isCompleted && <Check className="w-3 h-3 stroke-[3]" />}
         </div>
         <span>{isCompleted ? 'Completed' : 'Complete'}</span>
