@@ -38,65 +38,68 @@ function Calendar() {
     return `${year}-${monthString}-${dayString}`;
   };
 
-  const hasCompletedHabit = (day) => {
-    const dateString = getDateString(day);
+  const wasHabitActiveOnDate = (habit, dateString) => {
+    const createdDate = habit.createdAt
+      ? habit.createdAt.split('T')[0]
+      : null;
 
-    return completions.some(
-      (completion) =>
-        completion.date === dateString && completion.completed
-    );
+    const deletedDate = habit.deletedAt
+      ? habit.deletedAt.split('T')[0]
+      : null;
+
+    if (createdDate && dateString < createdDate) {
+      return false;
+    }
+
+   if (deletedDate && dateString > deletedDate) {
+  return false;
+}
+    return true;
   };
+
+  const hasCompletedHabit = (day) => {
+  const dateString = getDateString(day);
+
+  return habits
+    .filter((habit) => wasHabitActiveOnDate(habit, dateString))
+    .some((habit) =>
+      completions.some(
+        (completion) =>
+          completion.habitId === habit.id &&
+          completion.date === dateString &&
+          completion.completed
+      )
+    );
+};
 
   const getCompletedCount = (day) => {
     const dateString = getDateString(day);
 
-    return completions.filter(
-      (completion) =>
-        completion.date === dateString && completion.completed
+    const activeHabits = habits.filter((habit) =>
+      wasHabitActiveOnDate(habit, dateString)
+    );
+
+    return activeHabits.filter((habit) =>
+      completions.some(
+        (completion) =>
+          completion.habitId === habit.id &&
+          completion.date === dateString &&
+          completion.completed
+      )
+    ).length;
+  };
+
+  const getActiveHabitCount = (day) => {
+    const dateString = getDateString(day);
+    return habits.filter((habit) =>
+      wasHabitActiveOnDate(habit, dateString)
     ).length;
   };
 
   return (
     <div className="p-4 bg-white rounded-xl border border-gray-200">
       <h1 className="text-2xl font-bold mb-4">Calendar</h1>
-      {selectedDate && (
-  <div className="mt-6">
-    <h3 className="text-lg font-semibold">
-      Habits on {selectedDate}
-    </h3>
 
-    <div className="mt-3 space-y-2">
-      {habits.map((habit) => {
-        const completion = completions.find(
-          (item) =>
-            item.habitId === habit.id &&
-            item.date === selectedDate
-        );
-
-        return (
-          <div
-            key={habit.id}
-            className="flex items-center justify-between p-3 border rounded-lg"
-          >
-            <span>{habit.title}</span>
-
-            <div className="text-right">
-  <span>
-    {completion?.completed ? '✅ Completed' : '❌ Not completed'}
-  </span>
-
-  {completion?.note && (
-    <p className="text-sm text-gray-500 mt-1">
-      {completion.note}
-    </p>
-  )}
-</div>
-          </div>
-        );
-      })}
-    </div>
-  </div>
-)}
       {/* Month Navigation */}
       <div className="flex items-center justify-between mb-4">
         <button
@@ -135,30 +138,75 @@ function Calendar() {
 
       {/* Calendar Days Grid */}
       <div className="grid grid-cols-7 gap-2">
-        {calendarDays.map((day, index) => (
-          <div
-  key={index}
-  onClick={() => day && setSelectedDate(getDateString(day))}
-  className={`h-12 border rounded-lg flex items-center justify-center cursor-pointer ${
-    hasCompletedHabit(day) ? 'bg-green-500 text-white' : ''
-  }`}
->
-            <div className="flex flex-col items-center">
-              <span>{day}</span>
+        {calendarDays.map((day, index) => {
+          const activeCount = day ? getActiveHabitCount(day) : 0;
+          return (
+            <div
+              key={index}
+              onClick={() => day && setSelectedDate(getDateString(day))}
+              className={`h-12 border rounded-lg flex items-center justify-center cursor-pointer ${
+                day && hasCompletedHabit(day) ? 'bg-green-500 text-white' : ''
+              }`}
+            >
+              <div className="flex flex-col items-center">
+                <span>{day}</span>
 
-              {day && getCompletedCount(day) > 0 && (
-                <span
-                  className={`text-xs ${
-                    hasCompletedHabit(day) ? 'text-white' : 'text-green-600'
-                  }`}
-                >
-                  {getCompletedCount(day)}/{habits.length}
-                </span>
-              )}
+                {day && activeCount > 0 && (
+                  <span
+                    className={`text-xs ${
+                      hasCompletedHabit(day) ? 'text-white' : 'text-green-600'
+                    }`}
+                  >
+                    {getCompletedCount(day)}/{activeCount}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {/* Selected Date Details View */}
+      {selectedDate && (
+        <div className="mt-6">
+          <h3 className="text-lg font-semibold">
+            Habits on {selectedDate}
+          </h3>
+
+          <div className="mt-3 space-y-2">
+            {habits
+              .filter((habit) => wasHabitActiveOnDate(habit, selectedDate))
+              .map((habit) => {
+                const completion = completions.find(
+                  (item) =>
+                    item.habitId === habit.id &&
+                    item.date === selectedDate
+                );
+
+                return (
+                  <div
+                    key={habit.id}
+                    className="flex items-center justify-between p-3 border rounded-lg"
+                  >
+                    <span>{habit.title}</span>
+
+                    <div className="text-right">
+                      <span>
+                        {completion?.completed ? '✅ Completed' : '❌ Not completed'}
+                      </span>
+
+                      {completion?.note && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {completion.note}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

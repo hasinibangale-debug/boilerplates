@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Flame, Check } from 'lucide-react';
 
-const HabitCard = ({ habit, isCompleted, streak,onToggleComplete }) => {
+const HabitCard = ({ habit, isCompleted, streak, onToggleComplete, onSaveNote,savedNote }) => {
   const { title, color } = habit;
+  const [note, setNote] = useState(savedNote || '');
+  useEffect(() => {
+  setNote(savedNote || '');
+}, [savedNote]);
 
   return (
     <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between gap-4">
@@ -23,6 +27,26 @@ const HabitCard = ({ habit, isCompleted, streak,onToggleComplete }) => {
           </div>
         </div>
       </div>
+
+      {/* Step 3D: Note Input Section (Appears only when completed) */}
+      {isCompleted && (
+        <div className="flex-1">
+          <input
+            type="text"
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="How did it go today?"
+            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200"
+          />
+          <button
+            type="button"
+            onClick={() => onSaveNote?.(habit.id, note)}
+            className="mt-2 px-3 py-2 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+          >
+            Save Note
+          </button>
+        </div>
+      )}
 
       {/* Right section: Completion Checkbox Button */}
       <button

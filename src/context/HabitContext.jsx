@@ -1,4 +1,9 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+} from 'react';
 import { mockTodayHabits } from '../mock/habitData';
 import { mockCompletions } from '../mock/completionData';
 
@@ -7,8 +12,27 @@ const HabitContext = createContext(null);
 
 // Provider Component
 export const HabitProvider = ({ children }) => {
-  const [habits, setHabits] = useState(mockTodayHabits);
-  const [completions, setCompletions] = useState(mockCompletions);
+  const [habits, setHabits] = useState(() => {
+  const savedHabits = localStorage.getItem('habitflow-habits');
+
+  return savedHabits ? JSON.parse(savedHabits) : mockTodayHabits;
+});
+  const [completions, setCompletions] = useState(() => {
+  const savedCompletions = localStorage.getItem('habitflow-completions');
+
+  return savedCompletions ? JSON.parse(savedCompletions) : mockCompletions;
+});
+  useEffect(() => {
+  localStorage.setItem('habitflow-habits', JSON.stringify(habits));
+}, [habits]);
+
+useEffect(() => {
+  localStorage.setItem(
+    'habitflow-completions',
+    JSON.stringify(completions)
+  );
+}, [completions]);
+
 
   // Add a new habit
   const addHabit = (newHabit) => {
@@ -17,10 +41,14 @@ export const HabitProvider = ({ children }) => {
 
   // Delete a habit by ID
   const deleteHabit = (idToDelete) => {
-    setHabits((prevHabits) =>
-      prevHabits.filter((habit) => habit.id !== idToDelete)
-    );
-  };
+  setHabits((prevHabits) =>
+    prevHabits.map((habit) =>
+      habit.id === idToDelete
+        ? { ...habit, deletedAt: new Date().toISOString() }
+        : habit
+    )
+  );
+};
 
   // Update an existing habit by ID
   const updateHabit = (idToUpdate, updatedData) => {
@@ -57,6 +85,16 @@ export const HabitProvider = ({ children }) => {
     }
   });
 };
+const updateNote = (habitId, date, note) => {
+  setCompletions((prevCompletions) =>
+    prevCompletions.map((item) =>
+      item.habitId === habitId && item.date === date
+        ? { ...item, note }
+        : item
+    )
+  );
+};
+
   return (
     <HabitContext.Provider
       value={{
@@ -66,6 +104,7 @@ export const HabitProvider = ({ children }) => {
         updateHabit,
         completions,
         toggleCompletion,
+        updateNote,
       }}
     >
       {children}

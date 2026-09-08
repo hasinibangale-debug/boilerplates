@@ -15,14 +15,23 @@ const today = new Date().toISOString().split('T')[0];
 
 const Dashboard = () => {
   
-  const { habits, completions, toggleCompletion } = useHabit();
-  const completedCount = completions.filter(
-    (completion) => completion.date === today && completion.completed
-  ).length;
+  const { habits, completions, toggleCompletion,updateNote, } = useHabit();
+  const completedCount = habits.filter((habit) =>
+  completions.some(
+    (completion) =>
+      completion.habitId === habit.id &&
+      completion.date === today &&
+      completion.completed
+  )
+).length;
 
   const handleToggleComplete = (habitId) => {
     toggleCompletion(habitId, today);
   };
+  const handleSaveNote = (habitId, note) => {
+  updateNote(habitId, today, note);
+};
+
 
   return (
     <div className="space-y-8">
@@ -72,7 +81,7 @@ const Dashboard = () => {
 
         <StatCard
           title="Total Habits"
-          value={habits.length}
+          value={habits.filter((habit) => !habit.deletedAt).length}
           icon={ListTodo}
         />
 
@@ -101,7 +110,9 @@ const Dashboard = () => {
 
         <div className="space-y-3">
 
-          {habits.map((habit) => {
+          {habits
+          .filter((habit) => !habit.deletedAt)
+          .map((habit) => {
             const todayCompletion = completions.find(
               (completion) =>
                 completion.habitId === habit.id && completion.date === today
@@ -115,6 +126,8 @@ const Dashboard = () => {
                 isCompleted={todayCompletion ? todayCompletion.completed : false}
                 streak={streak}
                 onToggleComplete={handleToggleComplete}
+                onSaveNote={handleSaveNote}
+                savedNote={todayCompletion?.note || ''}
               />
             );
           })}
