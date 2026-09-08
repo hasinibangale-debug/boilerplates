@@ -8,12 +8,14 @@ import {
 import StatCard from '../components/StatCard';
 import HabitCard from '../components/HabitCard';
 import { useHabit } from '../context/HabitContext';
+import { calculateStreak } from '../utils/streak';
 
 const today = new Date().toISOString().split('T')[0];
 
-const Dashboard = () => {
-  const { habits, completions, toggleCompletion } = useHabit();
 
+const Dashboard = () => {
+  
+  const { habits, completions, toggleCompletion } = useHabit();
   const completedCount = completions.filter(
     (completion) => completion.date === today && completion.completed
   ).length;
@@ -104,12 +106,14 @@ const Dashboard = () => {
               (completion) =>
                 completion.habitId === habit.id && completion.date === today
             );
+            const streak = calculateStreak(habit.id, completions);
 
             return (
               <HabitCard
                 key={habit.id}
                 habit={habit}
                 isCompleted={todayCompletion ? todayCompletion.completed : false}
+                streak={streak}
                 onToggleComplete={handleToggleComplete}
               />
             );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Flame, Check } from 'lucide-react';
 
-const HabitCard = ({ habit, isCompleted, onToggleComplete }) => {
+const HabitCard = ({ habit, isCompleted, streak,onToggleComplete }) => {
   const { title, color } = habit;
 
   return (
@@ -19,7 +19,7 @@ const HabitCard = ({ habit, isCompleted, onToggleComplete }) => {
           
           <div className="flex items-center gap-1 text-amber-500 text-xs font-medium mt-1">
             <Flame className="w-3.5 h-3.5 fill-amber-500" />
-            <span>Streak calculation coming soon</span>
+            <span>{streak} day{streak !== 1 ? 's' : ''} streak</span>
           </div>
         </div>
       </div>
