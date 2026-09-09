@@ -43,7 +43,7 @@ export function AuthProvider({ children }) {
 
   if (token) {
     try {
-      const response = await api.get("/auth/me");
+      const response = await api.get("/users/profile");
       setUser(response.data);
     } catch (error) {
       console.error("Session expired or invalid token:", error);
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
   const login = async (credentials) => {
     // Update this endpoint to match your backend
     // Expected response: { token: "jwt_token", user: { id, email, name, ... } }
-    const response = await api.post("/auth/login", credentials);
+    const response = await api.post("/users/login", credentials);
     const { token: authToken, user: userData } = response.data;
 
     localStorage.setItem("token", authToken);

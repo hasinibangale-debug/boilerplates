@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import api from "../services/api"
 
 export default function Register() {
   const {
@@ -11,9 +12,21 @@ export default function Register() {
   const password = watch("password"); // Needed to validate Confirm Password
 
   const onSubmit = async (data) => {
-    console.log("Form Submitted Data:", data);
-    // You will call your backend API here later
-  };
+  try {
+    const response = await api.post("/users", {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+    });
+
+    console.log("Registration successful:", response.data);
+  } catch (error) {
+    console.error(
+      "Registration failed:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">

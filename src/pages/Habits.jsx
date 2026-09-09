@@ -39,7 +39,7 @@ function Habits() {
 
   // Start Editing a Habit
   const startEditing = (habit) => {
-    setEditingHabitId(habit.id);
+    setEditingHabitId(habit._id);
 
     setEditFormData({
       title: habit.title || '',
@@ -62,13 +62,15 @@ function Habits() {
   };
 
   // Save Updated Habit
-  const handleUpdate = (e) => {
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
-    updateHabit(editingHabitId, {
+    await updateHabit(editingHabitId, {
       ...editFormData,
       frequency: Number(editFormData.frequency),
-      timer: editFormData.timer ? Number(editFormData.timer) : null,
+      timer: editFormData.timer
+        ? Number(editFormData.timer)
+        : null,
     });
 
     cancelEdit();
@@ -93,14 +95,14 @@ function Habits() {
     e.preventDefault();
 
     const newHabit = {
-      id: Date.now(),
       title: formData.title,
       description: formData.description,
       category: formData.category,
       color: formData.color,
       frequency: Number(formData.frequency),
-      timer: formData.timer ? Number(formData.timer) : null,
-      createdAt: new Date().toISOString(),
+      timer: formData.timer
+        ? Number(formData.timer)
+        : null,
     };
 
     addHabit(newHabit);
@@ -249,209 +251,219 @@ function Habits() {
       {/* Habit List Section */}
       <ul className="space-y-2">
         {habits
-            .filter((habit) => !habit.deletedAt)
-            .map((habit) => (
-          <li
-            key={habit.id}
-            className="p-4 bg-white rounded shadow-sm border-l-4 space-y-3"
-            style={{ borderColor: habit.color || '#4f46e5' }}
-          >
-            {/* EDIT MODE */}
-            {editingHabitId === habit.id ? (
-              <form onSubmit={handleUpdate} className="space-y-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Title
-                  </label>
-
-                  <input
-                    type="text"
-                    name="title"
-                    value={editFormData.title}
-                    onChange={handleEditChange}
-                    required
-                    className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">
-                    Description
-                  </label>
-
-                  <input
-                    type="text"
-                    name="description"
-                    value={editFormData.description}
-                    onChange={handleEditChange}
-                    className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
+          .filter((habit) => !habit.deletedAt)
+          .map((habit) => (
+            <li
+              key={habit._id}
+              className="p-4 bg-white rounded shadow-sm border-l-4 space-y-3"
+              style={{
+                borderColor: habit.color || '#4f46e5',
+              }}
+            >
+              {/* EDIT MODE */}
+              {editingHabitId === habit._id ? (
+                <form onSubmit={handleUpdate} className="space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Category
-                    </label>
-
-                    <select
-                      name="category"
-                      value={editFormData.category}
-                      onChange={handleEditChange}
-                      required
-                      className="w-full p-2 border border-gray-300 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="" disabled>
-                        Select category
-                      </option>
-
-                      <option value="Health">Health</option>
-                      <option value="Personal Development">
-                        Personal Development
-                      </option>
-                      <option value="Enjoyment">Enjoyment</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Color
+                      Title
                     </label>
 
                     <input
-                      type="color"
-                      name="color"
-                      value={editFormData.color}
-                      onChange={handleEditChange}
-                      className="h-9 w-full p-1 border border-gray-300 rounded cursor-pointer bg-white"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Frequency
-                    </label>
-
-                    <select
-                      name="frequency"
-                      value={editFormData.frequency}
+                      type="text"
+                      name="title"
+                      value={editFormData.title}
                       onChange={handleEditChange}
                       required
-                      className="w-full p-2 border border-gray-300 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="" disabled>
-                        Select frequency
-                      </option>
-
-                      <option value="7">Every day</option>
-                      <option value="5">5 days a week</option>
-                      <option value="3">3 days a week</option>
-                      <option value="1">Once a week</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1">
-                      Timer (mins)
-                    </label>
-
-                    <input
-                      type="number"
-                      name="timer"
-                      min="0"
-                      value={editFormData.timer}
-                      onChange={handleEditChange}
-                      placeholder="e.g. 15"
                       className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
                   </div>
-                </div>
 
-                <div className="flex space-x-2 pt-2">
-                  <button
-                    type="submit"
-                    className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded hover:bg-green-700 transition-colors"
-                  >
-                    Save
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={cancelEdit}
-                    className="px-3 py-1 bg-gray-400 text-white text-xs font-semibold rounded hover:bg-gray-500 transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <>
-                {/* NORMAL HABIT VIEW */}
-                <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-semibold">{habit.title}</p>
+                    <label className="block text-xs font-medium text-gray-600 mb-1">
+                      Description
+                    </label>
 
-                    {habit.description && (
-                      <p className="text-sm text-gray-500">
-                        {habit.description}
+                    <input
+                      type="text"
+                      name="description"
+                      value={editFormData.description}
+                      onChange={handleEditChange}
+                      className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Category
+                      </label>
+
+                      <select
+                        name="category"
+                        value={editFormData.category}
+                        onChange={handleEditChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="" disabled>
+                          Select category
+                        </option>
+
+                        <option value="Health">Health</option>
+                        <option value="Personal Development">
+                          Personal Development
+                        </option>
+                        <option value="Enjoyment">
+                          Enjoyment
+                        </option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Color
+                      </label>
+
+                      <input
+                        type="color"
+                        name="color"
+                        value={editFormData.color}
+                        onChange={handleEditChange}
+                        className="h-9 w-full p-1 border border-gray-300 rounded cursor-pointer bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Frequency
+                      </label>
+
+                      <select
+                        name="frequency"
+                        value={editFormData.frequency}
+                        onChange={handleEditChange}
+                        required
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      >
+                        <option value="" disabled>
+                          Select frequency
+                        </option>
+
+                        <option value="7">Every day</option>
+                        <option value="5">5 days a week</option>
+                        <option value="3">3 days a week</option>
+                        <option value="1">Once a week</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1">
+                        Timer (mins)
+                      </label>
+
+                      <input
+                        type="number"
+                        name="timer"
+                        min="0"
+                        value={editFormData.timer}
+                        onChange={handleEditChange}
+                        placeholder="e.g. 15"
+                        className="w-full p-2 border border-gray-300 rounded text-sm bg-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex space-x-2 pt-2">
+                    <button
+                      type="submit"
+                      className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded hover:bg-green-700 transition-colors"
+                    >
+                      Save
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={cancelEdit}
+                      className="px-3 py-1 bg-gray-400 text-white text-xs font-semibold rounded hover:bg-gray-500 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  {/* NORMAL HABIT VIEW */}
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold">
+                        {habit.title}
                       </p>
-                    )}
-                  </div>
 
-                  <div className="flex space-x-2">
-                    <button
-                      type="button"
-                      onClick={() => startEditing(habit)}
-                      className="px-2 py-1 text-xs font-semibold bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setDeletingHabitId(habit.id)}
-                      className="px-2 py-1 text-xs font-semibold bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </div>
-
-                {/* DELETE CONFIRMATION */}
-                {deletingHabitId === habit.id && (
-                  <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-700 mb-3">
-                      Are you sure you want to delete this habit?
-                    </p>
+                      {habit.description && (
+                        <p className="text-sm text-gray-500">
+                          {habit.description}
+                        </p>
+                      )}
+                    </div>
 
                     <div className="flex space-x-2">
                       <button
                         type="button"
-                        onClick={() => {
-                          deleteHabit(habit.id);
-                          setDeletingHabitId(null);
-                        }}
-                        className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded hover:bg-red-700"
+                        onClick={() => startEditing(habit)}
+                        className="px-2 py-1 text-xs font-semibold bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
                       >
-                        Delete
+                        Edit
                       </button>
 
                       <button
                         type="button"
-                        onClick={() => setDeletingHabitId(null)}
-                        className="px-3 py-1 bg-gray-400 text-white text-xs font-semibold rounded hover:bg-gray-500"
+                        onClick={() =>
+                          setDeletingHabitId(habit._id)
+                        }
+                        className="px-2 py-1 text-xs font-semibold bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
                       >
-                        Cancel
+                        Delete
                       </button>
                     </div>
                   </div>
-                )}
-              </>
-            )}
-          </li>
-        ))}
+
+                  {/* DELETE CONFIRMATION */}
+                  {deletingHabitId === habit._id && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-700 mb-3">
+                        Are you sure you want to delete this habit?
+                      </p>
+
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteHabit(habit._id);
+                            setDeletingHabitId(null);
+                          }}
+                          className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded hover:bg-red-700"
+                        >
+                          Delete
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setDeletingHabitId(null)
+                          }
+                          className="px-3 py-1 bg-gray-400 text-white text-xs font-semibold rounded hover:bg-gray-500"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </li>
+          ))}
       </ul>
     </div>
   );
