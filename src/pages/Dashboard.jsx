@@ -8,7 +8,7 @@ import {
 import StatCard from '../components/StatCard';
 import HabitCard from '../components/HabitCard';
 import { useHabit } from '../context/HabitContext';
-import { calculateStreak } from '../utils/streak';
+import { calculateStreak, calculateOverallStreak,calculateBestStreak } from '../utils/streak';
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -72,7 +72,7 @@ if (currentHour < 12) {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
           title="Current Streak"
-          value="12 days"
+          value={`${calculateOverallStreak(completions)} days`}
           icon={Flame}
         />
 
@@ -84,7 +84,7 @@ if (currentHour < 12) {
 
         <StatCard
           title="Best Streak"
-          value="24 days"
+          value={`${calculateBestStreak(completions)} days`}
           icon={Trophy}
         />
 
