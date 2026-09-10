@@ -14,7 +14,17 @@ const today = new Date().toISOString().split('T')[0];
 
 const Dashboard = () => {
   const { habits, completions, toggleCompletion, updateNote } = useHabit();
+  const currentHour = new Date().getHours();
 
+let greeting;
+
+if (currentHour < 12) {
+  greeting = 'Good morning';
+} else if (currentHour < 17) {
+  greeting = 'Good afternoon';
+} else {
+  greeting = 'Good night';
+}
   const activeHabits = habits.filter((habit) => !habit.deletedAt);
 
   const completedCount = habits.filter((habit) =>
@@ -39,7 +49,7 @@ const Dashboard = () => {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">
-          Good morning 👋
+          {greeting} 👋
         </h1>
 
         <p className="text-gray-500 mt-1">
