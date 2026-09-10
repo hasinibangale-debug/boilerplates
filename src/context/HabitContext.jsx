@@ -4,28 +4,25 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { mockCompletions } from '../mock/completionData';
 import api from '../services/api';
+import { AuthContext } from './AuthContext';
 
 // Create Context
 const HabitContext = createContext(null);
 
 // Provider Component
 export const HabitProvider = ({ children }) => {
+   const { token } = useContext(AuthContext);
   const [habits, setHabits] = useState([]);
 
-  const [completions, setCompletions] = useState(() => {
-    const savedCompletions = localStorage.getItem(
-      'habitflow-completions'
-    );
-
-    return savedCompletions
-      ? JSON.parse(savedCompletions)
-      : mockCompletions;
-  });
+  const [completions, setCompletions] = useState([]);
 
   // Fetch habits from MongoDB when app loads
   useEffect(() => {
+    if (!token) {
+  setHabits([]);
+  return;
+}
     const fetchHabits = async () => {
       try {
         const response = await api.get('/habits');
@@ -40,15 +37,29 @@ export const HabitProvider = ({ children }) => {
     };
 
     fetchHabits();
-  }, []);
+  }, [token]);
 
-  // Save completions to localStorage
+
   useEffect(() => {
-    localStorage.setItem(
-      'habitflow-completions',
-      JSON.stringify(completions)
-    );
-  }, [completions]);
+     if (!token) {
+    setCompletions([]);
+    return;
+  }
+  const fetchCompletions = async () => {
+    try {
+      const response = await api.get('/completions');
+
+      setCompletions(response.data);
+    } catch (error) {
+      console.error(
+        'Failed to fetch completions:',
+        error.response?.data?.message || error.message
+      );
+    }
+  };
+
+  fetchCompletions();
+}, [token]);
 
   // Add a new habit
   const addHabit = async (newHabit) => {
@@ -76,21 +87,21 @@ export const HabitProvider = ({ children }) => {
 
   // Delete a habit by ID
   const deleteHabit = async (idToDelete) => {
-  try {
-    await api.delete(`/habits/${idToDelete}`);
+    try {
+      await api.delete(`/habits/${idToDelete}`);
 
-    setHabits((prevHabits) =>
-      prevHabits.filter(
-        (habit) => habit._id !== idToDelete
-      )
-    );
-  } catch (error) {
-    console.error(
-      'Failed to delete habit:',
-      error.response?.data?.message || error.message
-    );
-  }
-};
+      setHabits((prevHabits) =>
+        prevHabits.filter(
+          (habit) => habit._id !== idToDelete
+        )
+      );
+    } catch (error) {
+      console.error(
+        'Failed to delete habit:',
+        error.response?.data?.message || error.message
+      );
+    }
+  };
 
   // Update an existing habit
   const updateHabit = async (idToUpdate, updatedData) => {
@@ -123,56 +134,69 @@ export const HabitProvider = ({ children }) => {
   };
 
   // Toggle completion
-  const toggleCompletion = (habitId, date) => {
-    setCompletions((prevCompletions) => {
-      const existingCompletion = prevCompletions.find(
-        (item) =>
-          item.habitId === habitId &&
-          item.date === date
-      );
-
-      if (existingCompletion) {
-        return prevCompletions.map((item) =>
-          item.habitId === habitId &&
-          item.date === date
-            ? {
-                ...item,
-                completed: !item.completed,
-              }
-            : item
-        );
-      } else {
-        const newCompletion = {
-          id: Date.now(),
+  const toggleCompletion = async (habitId, date) => {
+    try {
+      const response = await api.post(
+        '/completions/toggle',
+        {
           habitId,
           date,
-          completed: true,
-          note: '',
-        };
+        }
+      );
+
+      setCompletions((prevCompletions) => {
+        const existingCompletion = prevCompletions.find(
+          (item) =>
+            item.habitId === habitId &&
+            item.date === date
+        );
+
+        if (existingCompletion) {
+          return prevCompletions.map((item) =>
+            item.habitId === habitId &&
+            item.date === date
+              ? response.data
+              : item
+          );
+        }
 
         return [
           ...prevCompletions,
-          newCompletion,
+          response.data,
         ];
-      }
-    });
+      });
+    } catch (error) {
+      console.error(
+        'Failed to toggle completion:',
+        error.response?.data?.message || error.message
+      );
+    }
   };
 
   // Update note
-  const updateNote = (habitId, date, note) => {
+  const updateNote = async (habitId, date, note) => {
+  try {
+    const response = await api.put('/completions/note', {
+      habitId,
+      date,
+      note,
+    });
+
     setCompletions((prevCompletions) =>
       prevCompletions.map((item) =>
         item.habitId === habitId &&
         item.date === date
-          ? {
-              ...item,
-              note,
-            }
+          ? response.data
           : item
       )
     );
-  };
-
+  } catch (error) {
+    console.error(
+      'Failed to update note:',
+      error.response?.data?.message || error.message
+    );
+  }
+};
   return (
     <HabitContext.Provider
       value={{

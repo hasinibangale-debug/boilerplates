@@ -40,7 +40,7 @@ const HabitCard = ({ habit, isCompleted, streak, onToggleComplete, onSaveNote,sa
           />
           <button
             type="button"
-            onClick={() => onSaveNote?.(habit.id, note)}
+            onClick={() => onSaveNote?.(habit._id, note)}
             className="mt-2 px-3 py-2 text-xs font-medium bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
           >
             Save Note
@@ -50,7 +50,7 @@ const HabitCard = ({ habit, isCompleted, streak, onToggleComplete, onSaveNote,sa
 
       {/* Right section: Completion Checkbox Button */}
       <button
-        onClick={() => onToggleComplete?.(habit.id)}
+        onClick={() => onToggleComplete?.(habit._id)}
         className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
           isCompleted
             ? 'bg-green-100 text-green-700 border border-green-200'

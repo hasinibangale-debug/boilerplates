@@ -3,6 +3,7 @@ const connectDB = require('./config/db');
 
 const userRoutes = require('./routes/userRoutes');
 const habitRoutes = require('./routes/habitRoutes');
+const completionRoutes = require('./routes/completionRoutes');
 
 const express = require('express');
 const cors = require('cors');
@@ -16,6 +17,7 @@ app.use(express.json());
 
 app.use('/api/users', userRoutes);
 app.use('/api/habits', habitRoutes);
+app.use('/api/completions', completionRoutes);
 
 
 app.get('/', (req, res) => {

@@ -12,30 +12,30 @@ import { calculateStreak } from '../utils/streak';
 
 const today = new Date().toISOString().split('T')[0];
 
-
 const Dashboard = () => {
-  
-  const { habits, completions, toggleCompletion,updateNote, } = useHabit();
+  const { habits, completions, toggleCompletion, updateNote } = useHabit();
+
+  const activeHabits = habits.filter((habit) => !habit.deletedAt);
+
   const completedCount = habits.filter((habit) =>
-  completions.some(
-    (completion) =>
-      completion.habitId === habit.id &&
-      completion.date === today &&
-      completion.completed
-  )
-).length;
+    completions.some(
+      (completion) =>
+        completion.habitId === habit._id &&
+        completion.date === today &&
+        completion.completed
+    )
+  ).length;
 
   const handleToggleComplete = (habitId) => {
     toggleCompletion(habitId, today);
   };
-  const handleSaveNote = (habitId, note) => {
-  updateNote(habitId, today, note);
-};
 
+  const handleSaveNote = (habitId, note) => {
+    updateNote(habitId, today, note);
+  };
 
   return (
     <div className="space-y-8">
-
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">
@@ -60,7 +60,6 @@ const Dashboard = () => {
 
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-
         <StatCard
           title="Current Streak"
           value="12 days"
@@ -69,7 +68,7 @@ const Dashboard = () => {
 
         <StatCard
           title="Today's Completion"
-          value={`${completedCount} / ${habits.length}`}
+          value={`${completedCount} / ${activeHabits.length}`}
           icon={CheckCircle2}
         />
 
@@ -81,17 +80,14 @@ const Dashboard = () => {
 
         <StatCard
           title="Total Habits"
-          value={habits.filter((habit) => !habit.deletedAt).length}
+          value={activeHabits.length}
           icon={ListTodo}
         />
-
       </div>
 
       {/* Today's Habits */}
       <section>
-
         <div className="flex items-center justify-between mb-4">
-
           <div>
             <h2 className="text-xl font-bold text-gray-900">
               Today's Habits
@@ -103,25 +99,21 @@ const Dashboard = () => {
           </div>
 
           <span className="text-sm font-medium text-gray-500">
-            {completedCount}/{habits.length} completed
+            {completedCount}/{activeHabits.length} completed
           </span>
-
         </div>
 
         <div className="space-y-3">
-
-          {habits
-          .filter((habit) => !habit.deletedAt)
-          .map((habit) => {
+          {activeHabits.map((habit) => {
             const todayCompletion = completions.find(
               (completion) =>
-                completion.habitId === habit.id && completion.date === today
+                completion.habitId === habit._id && completion.date === today
             );
-            const streak = calculateStreak(habit.id, completions);
+            const streak = calculateStreak(habit._id, completions);
 
             return (
               <HabitCard
-                key={habit.id}
+                key={habit._id}
                 habit={habit}
                 isCompleted={todayCompletion ? todayCompletion.completed : false}
                 streak={streak}
@@ -131,16 +123,12 @@ const Dashboard = () => {
               />
             );
           })}
-
         </div>
-
       </section>
 
       {/* Calendar Preview */}
       <section>
-
         <div className="flex items-center justify-between mb-4">
-
           <div>
             <h2 className="text-xl font-bold text-gray-900">
               Your Progress
@@ -154,19 +142,14 @@ const Dashboard = () => {
           <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
             View Calendar →
           </button>
-
         </div>
 
         <div className="bg-white border border-gray-200 rounded-xl p-6">
-
           <p className="text-center text-gray-500">
             Calendar preview coming next.
           </p>
-
         </div>
-
       </section>
-
     </div>
   );
 };

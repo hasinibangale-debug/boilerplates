@@ -1,7 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+
 
 const DashboardNavbar = () => {
+  const { user,logout } = React.useContext(AuthContext);
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
       {/* Brand / Logo */}
@@ -20,11 +24,18 @@ const DashboardNavbar = () => {
           🔔
         </button>
         <div className="flex items-center space-x-2">
+          
           <div className="w-8 h-8 rounded-full bg-indigo-500 text-white flex items-center justify-center font-medium text-sm">
             U
           </div>
-          <span className="text-sm font-medium text-gray-700">User</span>
+          <span className="text-sm font-medium text-gray-700">{user?.name || 'User'}</span>
         </div>
+        <button
+  onClick={logout}
+  className="text-sm font-medium text-gray-600 hover:text-red-600 transition-colors"
+>
+  Logout
+</button>
       </div>
     </header>
   );
