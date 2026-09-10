@@ -9,13 +9,14 @@ import StatCard from '../components/StatCard';
 import HabitCard from '../components/HabitCard';
 import { useHabit } from '../context/HabitContext';
 import { calculateStreak, calculateOverallStreak,calculateBestStreak } from '../utils/streak';
+import { useNavigate } from 'react-router-dom';
 
 const today = new Date().toISOString().split('T')[0];
 
 const Dashboard = () => {
   const { habits, completions, toggleCompletion, updateNote } = useHabit();
   const currentHour = new Date().getHours();
-
+  const navigate = useNavigate();
 let greeting;
 
 if (currentHour < 12) {
@@ -149,7 +150,11 @@ if (currentHour < 12) {
             </p>
           </div>
 
-          <button className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+          <button
+          onClick={() =>
+             navigate('/dashboard/calendar')}
+            className="text-sm font-medium text-indigo-600 hover:text-indigo-700"
+          >
             View Calendar →
           </button>
         </div>
