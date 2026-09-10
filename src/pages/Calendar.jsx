@@ -65,7 +65,7 @@ function Calendar() {
     .some((habit) =>
       completions.some(
         (completion) =>
-          completion.habitId === habit.id &&
+          String(completion.habitId) === String(habit._id) &&
           completion.date === dateString &&
           completion.completed
       )
@@ -82,7 +82,7 @@ function Calendar() {
     return activeHabits.filter((habit) =>
       completions.some(
         (completion) =>
-          completion.habitId === habit.id &&
+          String(completion.habitId) === String(habit._id) &&
           completion.date === dateString &&
           completion.completed
       )
@@ -178,14 +178,14 @@ function Calendar() {
               .filter((habit) => wasHabitActiveOnDate(habit, selectedDate))
               .map((habit) => {
                 const completion = completions.find(
-                  (item) =>
-                    item.habitId === habit.id &&
-                    item.date === selectedDate
-                );
+  (item) =>
+    String(item.habitId) === String(habit._id) &&
+    item.date === selectedDate
+);
 
                 return (
                   <div
-                    key={habit.id}
+                    key={habit._id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
                     <span>{habit.title}</span>
